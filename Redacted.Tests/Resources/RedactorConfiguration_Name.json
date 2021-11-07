@@ -1,0 +1,15 @@
+{
+  "RedactBy": "Name",
+  "NameRedactValue": "SomethingElse",
+  "RedactNames": [
+    "Address",
+    "Name",
+    "Email",
+    "PhoneNumber",
+    "SocialSecurityNumber",
+    "SSN",
+    "TaxID",
+    "DateOfBirth",
+    "DOB"
+  ]
+}

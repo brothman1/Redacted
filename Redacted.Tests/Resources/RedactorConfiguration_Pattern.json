@@ -1,0 +1,50 @@
+{
+  "RedactBy": "Pattern",
+  "RedactPatterns": [
+    {
+      "Name": "CC-VISA-MSC-DSC",
+      "Pattern": "[456](([^\\dA-Za-z]?)+\\d){15}",
+      "MinimumLength": 16
+    },
+    {
+      "Name": "CC-AMEX",
+      "Pattern": "3(([^\\dA-Za-z]?)+\\d){14}",
+      "MinimumLength": 15
+    },
+    {
+      "Name": "EMAIL-ADDRESS",
+      "Pattern": "@\"[^ @]+@+[^@]+\\.+[A-Za-z]+\"",
+      "MinimumLength": 5
+    },
+    {
+      "Name": "NINE-DIGITS-PLUS",
+      "Pattern": "\\d(([^\\dA-Za-z]?)+\\d){8,}",
+      "MinimumLength": 9
+    },
+    {
+      "Name": "IP-ADDRESS",
+      "Pattern": "\\d+(([ ]?)+\\.+([ ]?)+\\d+){3,}",
+      "MinimumLength": 7
+    },
+    {
+      "Name": "DATE-SHORT-AMBIGUOUS",
+      "Pattern": "([1-2]\\d|3[0-1]|0?\\d)([\\\\/.,_-])([1-2]\\d|3[0-1]|0?\\d)\\2(?:\\d{4}|\\d{2})",
+      "MinimumLength": 6
+    },
+    {
+      "Name": "DATE-SHORT-MONTH-DAY-YEAR",
+      "Pattern": "(?<!\\d)(?:(?:1[0-2]|0?\\d)(?=([\\\\/.,_-])(1[3-9]|2\\d|3[0-1])))\\1\\2\\1(?:\\d{4}|\\d{2})(?!\\d)",
+      "MinimumLength": 8
+    },
+    {
+      "Name": "DATE-SHORT-DAY-MONTH-YEAR",
+      "Pattern": "(?<!\\d)(?:(?:1[3-9]|2\\d|3[0-1])(?=([\\\\/.,_-])(1[0-2]|0?\\d)))\\1\\2\\1(?:\\d{4}|\\d{2})(?!\\d)",
+      "MinimumLength": 8
+    },
+    {
+      "Name": "DATE-SHORT-YEAR-MONTH-DAY",
+      "Pattern": "(?<!\\d)(?:(?:\\d{4}|\\d{2})(?=([\\\\/.,_-])(1[0-2]|0?\\d)))\\1\\2\\1(?:1[3-9]|2\\d|3[0-1])(?!\\d)",
+      "MinimumLength": 8
+    }
+  ]
+}

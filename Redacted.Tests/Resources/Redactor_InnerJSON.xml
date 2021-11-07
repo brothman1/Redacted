@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?bullshit dob="01/01/2020"?>
+<!--My DOB is 01/01/2020-->
+<!--123-45-6789-->
+<Root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<Header>
+		OutOfPlaceEmailAddress
+		<Duration>10213.7722</Duration>
+		<EndTime>2019-06-03T11:51:10.6126159-04:00</EndTime>
+		<RequestGuid>00000000-0000-0000-0000-000000000000</RequestGuid>
+		<RequestStatus randomDOB="01/01/2020">QuoteRateSummary</RequestStatus>
+		<StartTime>2019-06-03T11:51:00.3907463-04:00</StartTime>
+	</Header>
+	<Body>
+		<TestNames>
+			<SSN>
+				<Value>123456789</Value>
+			</SSN>
+			<ArrayOfSSN>
+				<Value>123456789</Value>
+				<Value>123456789</Value>
+				<Value>123456789</Value>
+			</ArrayOfSSN>
+		</TestNames>
+		<TestValues>
+			<InnerJson>
+				<![CDATA[[{"Id": 1, "FirstName": "MyFirstName", "MiddleName": "", "LastName": null, "SomeProperty": "SomeValue"}]]]>
+			</InnerJson>
+		</TestValues>
+		<TestPatterns>
+		</TestPatterns>
+	</Body>
+</Root>
