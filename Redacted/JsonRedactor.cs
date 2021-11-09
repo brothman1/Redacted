@@ -7,27 +7,16 @@ namespace Redacted
 {
     public class JsonRedactor : Redactor
     {
-        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonRedactor"/> class that will redact by matching property names or value patterns.
         /// </summary>
-        /// <param name="config"><see cref="RedactorConfiguration"/> that houses the configurating used to redact.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="config"/> cannot be null.</exception>
-        public JsonRedactor(RedactorConfiguration config) : base(config)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JsonRedactor"/> class that will redact by matching property names or value patterns.
-        /// </summary>
-        /// <param name="config"><see cref="RedactorConfiguration"/> that houses the configurating used to redact.</param>
+        /// <param name="config"><see cref="IRedactorConfiguration"/> that houses the configurating used to redact.</param>
         /// <param name="parentRedactor"><see cref="Redactor"/> that created this.</param>
         /// <exception cref="ArgumentNullException"><paramref name="config"/> cannot be null.</exception>
-        public JsonRedactor(RedactorConfiguration config, IRedactor parentRedactor) : base(config)
+        public JsonRedactor(IRedactorConfiguration config, IRedactor parentRedactor = null) : base(config, RedactorType.Json)
         {
             ParentRedactor = parentRedactor;
         }
-        #endregion
 
         /// <summary>
         /// Redacts <paramref name="jsonToRedact"/> by either matching propery names, value patterns, or both depending on the value of <see cref="RedactBy"/>.
@@ -37,7 +26,7 @@ namespace Redacted
         /// <exception cref="ArgumentException"><paramref name="jsonToRedact"/> must be in valid JSON format.</exception>
         public override string Redact(string jsonToRedact)
         {
-            var tokenToRedact = GetJson(jsonToRedact.Trim());
+            var tokenToRedact = GetJson(jsonToRedact?.Trim());
             RedactToken(tokenToRedact);
             return JsonConvert.SerializeObject(tokenToRedact, Formatting.Indented);
         }
@@ -63,7 +52,7 @@ namespace Redacted
         private void RedactToken(JToken tokenToRedact, bool redactByName = false)
         {
             ProcessChildTokens(tokenToRedact, redactByName);
-            RedactProperty(tokenToRedact);
+            RedactProperty(tokenToRedact, redactByName);
             RedactValue(tokenToRedact, redactByName);
         }
 
@@ -98,11 +87,11 @@ namespace Redacted
         /// </summary>
         /// <remarks>Determines <paramref name="tokenToRedact"/>'s <see cref="JToken.Value"/> is <see cref="JToken"/> before redacting.</remarks>
         /// <param name="tokenToRedact"><see cref="JProperty"/> that is to be redacted.</param>
-        private void RedactProperty(JToken tokenToRedact)
+        private void RedactProperty(JToken tokenToRedact, bool redactByName = false)
         {
             if (TryGetPropertyAndValue(tokenToRedact, out JProperty propertyToRedact, out JToken valueToRedact))
             {
-                RedactValue(valueToRedact, RedactName && IsPiiName(propertyToRedact.Name));
+                RedactValue(valueToRedact, redactByName || (RedactName && IsPiiName(propertyToRedact.Name)));
             }
             else if (propertyToRedact != null && valueToRedact != null)
             {

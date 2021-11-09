@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Redacted.Configuration;
 
@@ -16,7 +17,7 @@ namespace Redacted
         private const string JsonObjectEnd = "}";
         private const string JsonArrayStart = "[";
         private const string JsonArrayEnd = "]";
-        private RedactorConfiguration _config;
+        private IRedactorConfiguration _config;
         private IRedactor _xmlRedactor = null;
         private IRedactor _jsonRedactor = null;
 
@@ -30,6 +31,11 @@ namespace Redacted
         /// Ordinal representation of when this was instantiated.
         /// </summary>
         public int Id { get; }
+
+        /// <summary>
+        /// Type of <see cref="Redactor"/>.
+        /// </summary>
+        public RedactorType RedactorType { get; }
 
         /// <summary>
         /// The names of properties whose matches to redact when <see cref="RedactName"/> is true.
@@ -50,7 +56,7 @@ namespace Redacted
         /// The method by which redaction should take place, either <see cref="RedactBy.NameAndPattern"/>, <see cref="RedactBy.Name"/>, or 
         /// <see cref="RedactBy.Pattern"/>.
         /// </summary>
-        public RedactBy RedactBy { get => _config.RedactBy; }
+        public RedactBy RedactBy => _config.RedactBy;
 
         /// <summary>
         /// True when <see cref="RedactBy"/> is <see cref="RedactBy.NameAndPattern"/> or <see cref="RedactBy.Name"/>.
@@ -70,31 +76,36 @@ namespace Redacted
         /// <summary>
         /// <see cref="Redacted.XmlRedactor"/> object to redact XML.
         /// </summary>
-        public IRedactor XmlRedactor
-        {
-            get => _xmlRedactor ?? ParentRedactor?.XmlRedactor ?? BuildXmlRedactor();
-            private set => _xmlRedactor = value;
-        }
+        public IRedactor XmlRedactor => _xmlRedactor ?? ParentRedactor?.XmlRedactor ?? BuildXmlRedactor();
 
         /// <summary>
         /// <see cref="Redacted.JsonRedactor"/> object to redact JSON.
         /// </summary>
-        public IRedactor JsonRedactor
-        {
-            get => _jsonRedactor ?? ParentRedactor?.JsonRedactor ?? BuildJsonRedactor();
-            private set => _xmlRedactor = value;
-        }
+        public IRedactor JsonRedactor => _jsonRedactor ?? ParentRedactor?.JsonRedactor ?? BuildJsonRedactor();
         #endregion
 
         #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="Redactor"/> class that will redact by matching property names or value patterns.
         /// </summary>
-        /// <param name="config"><see cref="RedactorConfiguration"/> that houses the configurating used to redact.</param>
+        /// <param name="config"><see cref="IRedactorConfiguration"/> that houses the configurating used to redact.</param>
         /// <exception cref="ArgumentNullException"><paramref name="config"/> cannot be null.</exception>
-        public Redactor(RedactorConfiguration config)
+        public Redactor(IRedactorConfiguration config) : this(config, RedactorType.None)
+        {   
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Redactor"/> class that will redact by matching property names or value patterns.
+        /// </summary>
+        /// <param name="config"><see cref="IRedactorConfiguration"/> that houses the configurating used to redact.</param>
+        /// <param name="redactorType">Type of <see cref="Redactor"/>.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="config"/> cannot be null.</exception>
+        protected Redactor(IRedactorConfiguration config, RedactorType redactorType)
         {
+            RedactorType = redactorType;
             _config = config ?? throw new ArgumentNullException(nameof(config), $"\"{nameof(config)}\" cannot be null.");
+            _redactorCollection.Add(this);
+            Id = _redactorCollection.Count;
         }
         #endregion
 
@@ -106,7 +117,7 @@ namespace Redacted
         /// <exception cref="ArgumentException"><paramref name="valueToRedact"/> must be in valid XML or JSON format.</exception>
         public virtual string Redact(string valueToRedact)
         {
-            valueToRedact = valueToRedact.Trim();
+            valueToRedact = valueToRedact?.Trim();
             if (HasXmlEdges(valueToRedact))
             {
                 return XmlRedactor.Redact(valueToRedact);
@@ -146,28 +157,20 @@ namespace Redacted
         #endregion
 
         /// <summary>
-        /// Builds new instance of <see cref="Redacted.XmlRedactor"/> by passing value types by reference.
+        /// Builds new instance of <see cref="Redacted.XmlRedactor"/>.
         /// </summary>
         /// <returns><see cref="IRedactor"/></returns>
-        /// <exception cref="InvalidOperationException"><see cref="RedactBy"/> must be either <see cref="RedactBy.NameAndPattern"/>, <see cref="RedactBy.Name"/>, or 
-        /// <see cref="RedactBy.Pattern"/>.</exception>
         private IRedactor BuildXmlRedactor()
         {
             switch (RedactBy)
             {
+                case RedactBy.Name:
+                case RedactBy.Pattern:
                 case RedactBy.NameAndPattern:
                     _xmlRedactor = new XmlRedactor(_config, this);
                     return _xmlRedactor;
-                case RedactBy.Name:
-                    _xmlRedactor = new XmlRedactor(_config, this);
-                    return _xmlRedactor;
-                case RedactBy.Pattern:
-                    _xmlRedactor = new XmlRedactor(_config, this);
-                    return _xmlRedactor;
                 default:
-                    var message = $"Can only build \"{nameof(Redacted.XmlRedactor)}\" when \"{nameof(Redactor)}.{nameof(RedactBy)}\" is " +
-                                    $"\"{RedactBy.NameAndPattern}\", \"{RedactBy.Name}\", or \"{RedactBy.Pattern}\".";
-                    throw new InvalidOperationException(message);
+                    return null;
             }
         }
         #endregion
@@ -230,28 +233,21 @@ namespace Redacted
         #endregion
 
         /// <summary>
-        /// Builds new instance of <see cref="Redacted.JsonRedactor"/> by passing value types by reference.
+        /// Builds new instance of <see cref="Redacted.JsonRedactor"/>.
         /// </summary>
         /// <returns><see cref="IRedactor"/></returns>
-        /// <exception cref="InvalidOperationException"><see cref="RedactBy"/> must be either <see cref="RedactBy.NameAndPattern"/>, <see cref="RedactBy.Name"/>, or 
-        /// <see cref="RedactBy.Pattern"/>.</exception>
         private IRedactor BuildJsonRedactor()
         {
             switch (RedactBy)
             {
+
+                case RedactBy.Name:
+                case RedactBy.Pattern:
                 case RedactBy.NameAndPattern:
                     _jsonRedactor = new JsonRedactor(_config, this);
                     return _jsonRedactor;
-                case RedactBy.Name:
-                    _jsonRedactor = new JsonRedactor(_config, this);
-                    return _jsonRedactor;
-                case RedactBy.Pattern:
-                    _jsonRedactor = new JsonRedactor(_config, this);
-                    return _jsonRedactor;
                 default:
-                    var message = $"Can only build \"{nameof(Redacted.JsonRedactor)}\" when \"{nameof(Redactor)}.{nameof(RedactBy)}\" is " +
-                                    $"\"{RedactBy.NameAndPattern}\", \"{RedactBy.Name}\", or \"{RedactBy.Pattern}\".";
-                    throw new InvalidOperationException(message);
+                    return null;
             }
         }
         #endregion
@@ -261,7 +257,13 @@ namespace Redacted
         /// </summary>
         /// <param name="name"><see cref="string"/> that is matched against <see cref="RedactNames"/>.</param>
         /// <returns>True if <paramref name="name"/> matches <see cref="RedactNames"/></returns>
-        protected bool IsPiiName(string name) => RedactNames?.Any(x => name?.Trim().ToLower().Contains(x) ?? false) ?? false;
+        protected bool IsPiiName(string name)
+        {
+            return RedactNames?.Any(x =>
+            {
+                return x != null && (name?.Trim().ToLower().Contains(x.Trim().ToLower()) ?? false); 
+            }) ?? false;
+        }
 
         /// <summary>
         /// Determines new value for objects based on <paramref name="valueToRedact"/>.
@@ -296,19 +298,21 @@ namespace Redacted
         }
 
         /// <summary>
-        /// 
+        /// Attempts to redact <paramref name="valueToRedact"/> by converting to XML or JSON object and passing through
+        /// <see cref="XmlRedactor.Redact(string)"/> or <see cref="JsonRedactor.Redact(string)"/>.
         /// </summary>
-        /// <param name="valueToRedact"></param>
-        /// <param name="redactedValue"></param>
-        /// <returns></returns>
+        /// <param name="valueToRedact">Value to convert to XML or JSON object and redact.</param>
+        /// <param name="redactedValue">Output representing <paramref name="redactedValue"/> after being 
+        /// redacted.</param>
+        /// <returns>True if able to redact.</returns>
         private bool TryRedact(string valueToRedact, out string redactedValue)
         {
-            if (this is XmlRedactor && HasJsonEdges(valueToRedact) && TryRedactJson(valueToRedact, out redactedValue))
+            if (RedactorType == RedactorType.Xml && HasJsonEdges(valueToRedact) && TryRedactJson(valueToRedact, out redactedValue))
             {
 
                 return true;
             }
-            else if (this is JsonRedactor && HasXmlEdges(valueToRedact) && TryRedactXml(valueToRedact, out redactedValue))
+            else if (RedactorType == RedactorType.Json && HasXmlEdges(valueToRedact) && TryRedactXml(valueToRedact, out redactedValue))
             {
                 return true;
             }
@@ -320,31 +324,13 @@ namespace Redacted
         }
 
         /// <summary>
-        /// 
+        /// Attempts to redact <paramref name="valueToRedact"/> by converting to XML object and passing through 
+        /// <see cref="XmlRedactor.Redact(string)"/>.
         /// </summary>
-        /// <param name="valueToRedact"></param>
-        /// <param name="redactedValue"></param>
-        /// <returns></returns>
-        private bool TryRedactJson(string valueToRedact, out string redactedValue)
-        {
-            try
-            {
-                redactedValue = JsonRedactor.Redact(valueToRedact);
-                return true;
-            }
-            catch
-            {
-                redactedValue = null;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="valueToRedact"></param>
-        /// <param name="redactedValue"></param>
-        /// <returns></returns>
+        /// <param name="valueToRedact">Value to convert to XML object and redact.</param>
+        /// <param name="redactedValue">Output representing <paramref name="redactedValue"/> after being 
+        /// redacted.</param>
+        /// <returns>True if able to redact.</returns>
         private bool TryRedactXml(string valueToRedact, out string redactedValue)
         {
             try
@@ -360,16 +346,46 @@ namespace Redacted
         }
 
         /// <summary>
-        /// 
+        /// Attempts to redact <paramref name="valueToRedact"/> by converting to JSON object and passing through 
+        /// <see cref="JsonRedactor.Redact(string)"/>.
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="valueToRedact">Value to convert to JSON object and redact.</param>
+        /// <param name="redactedValue">Output representing <paramref name="redactedValue"/> after being 
+        /// redacted.</param>
+        /// <returns>True if able to redact.</returns>
+        private bool TryRedactJson(string valueToRedact, out string redactedValue)
+        {
+            try
+            {
+                redactedValue = JsonRedactor.Redact(valueToRedact);
+                return true;
+            }
+            catch
+            {
+                redactedValue = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Attempts to replace values in <paramref name="value"/> that match patterns in 
+        /// <see cref="RedactPatterns"/>.
+        /// </summary>
+        /// <param name="value">Value to replace.</param>
+        /// <returns><paramref name="value"/> after replacement.</returns>
         private string GetPatternRedactedValue(string value)
         {
-            if (RedactPattern)
+            if (RedactPatterns != null)
             {
-                //regex here
+                foreach (var pattern in RedactPatterns)
+                {
+                    if (value.Length >= pattern.MinimumLength)
+                    {
+                        value = Regex.Replace(value, pattern.Pattern, $"*REDACTED-{pattern.Name}*");
+                    }
+                }
             }
+
             return value;
         }
     }

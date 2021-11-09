@@ -52,14 +52,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\IRedactorConfiguration.cs" />
     <Compile Include="Redactor.cs" />
     <Compile Include="IRedactor.cs" />
-    <Compile Include="JsonRedactor\JsonRedactor.cs" />
+    <Compile Include="JsonRedactor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RedactBy.cs" />
     <Compile Include="Configuration\RedactorConfiguration.cs" />
     <Compile Include="Configuration\RedactPattern.cs" />
-    <Compile Include="XmlRedactor\XmlRedactor.cs" />
+    <Compile Include="RedactorType.cs" />
+    <Compile Include="XmlRedactor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

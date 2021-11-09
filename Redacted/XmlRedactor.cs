@@ -7,27 +7,16 @@ namespace Redacted
 {
     public class XmlRedactor : Redactor
     {
-        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="XmlRedactor"/> class that will redact by matching property names or value patterns.
         /// </summary>
-        /// <param name="config"><see cref="RedactorConfiguration"/> that houses the configurating used to redact.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="config"/> cannot be null.</exception>
-        public XmlRedactor(RedactorConfiguration config) : base(config)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="XmlRedactor"/> class that will redact by matching property names or value patterns.
-        /// </summary>
-        /// <param name="config"><see cref="RedactorConfiguration"/> that houses the configurating used to redact.</param>
+        /// <param name="config"><see cref="IRedactorConfiguration"/> that houses the configurating used to redact.</param>
         /// <param name="parentRedactor"><see cref="Redactor"/> that created this.</param>
         /// <exception cref="ArgumentNullException"><paramref name="config"/> cannot be null.</exception>
-        public XmlRedactor(RedactorConfiguration config, IRedactor parentRedactor) : base(config)
+        public XmlRedactor(IRedactorConfiguration config, IRedactor parentRedactor = null) : base(config, RedactorType.Xml)
         {
             ParentRedactor = parentRedactor;
         }
-        #endregion
 
         /// <summary>
         /// Redacts <paramref name="xmlToRedact"/> by either matching propery names, value patterns, or both depending on the value of <see cref="RedactBy"/>.
@@ -37,7 +26,7 @@ namespace Redacted
         /// <exception cref="ArgumentException"><paramref name="xmlToRedact"/> must be in valid XML format.</exception>
         public override string Redact(string xmlToRedact)
         {
-            var nodeToRedact = GetXml(xmlToRedact.Trim());
+            var nodeToRedact = GetXml(xmlToRedact?.Trim());
             RedactNode(nodeToRedact);
             return nodeToRedact.ToString();
         }
@@ -66,12 +55,12 @@ namespace Redacted
         /// </summary>
         /// <remarks>Start point to redact any <see cref="XNode"/>.</remarks>
         /// <param name="nodeToRedact"><see cref="XNode"/> that is to be redacted.</param>
-        private void RedactNode(XNode nodeToRedact)
+        private void RedactNode(XNode nodeToRedact, bool redactByName = false)
         {
             ProcessChildAttributes(nodeToRedact);
-            ProcessChildNodes(nodeToRedact);
+            ProcessChildNodes(nodeToRedact, redactByName);
             RedactProperty(nodeToRedact);
-            RedactValue(nodeToRedact);
+            RedactValue(nodeToRedact, redactByName);
         }
 
         /// <summary>
@@ -81,7 +70,7 @@ namespace Redacted
         /// <param name="parentNode"><see cref="XNode"/> to redact <see cref="XAttribute"/> children from.</param>
         private void ProcessChildAttributes(XNode parentNode)
         {
-            if (parentNode is XElement element && element.HasAttributes)
+            if (parentNode is XElement element && (element?.HasAttributes ?? false))
             {
                 var attributeToRedact = element.FirstAttribute;
                 while (attributeToRedact != null)
@@ -97,16 +86,28 @@ namespace Redacted
         /// </summary>
         /// <remarks>Determines <paramref name="parentNode"/> is <see cref="XContainer"/> before looping.</remarks>
         /// <param name="parentNode"><see cref="XNode"/> to redact <see cref="XNode"/> children from.</param>
-        private void ProcessChildNodes(XNode parentNode)
+        private void ProcessChildNodes(XNode parentNode, bool redactByName = false)
         {
             if (parentNode is XContainer container)
             {
                 var nodeToRedact = container.FirstNode;
                 while (nodeToRedact != null)
                 {
-                    RedactNode(nodeToRedact);
+                    RedactNode(nodeToRedact, redactByName || HasPiiParent(container));
                     nodeToRedact = nodeToRedact.NextNode;
                 }
+            }
+        }
+
+        private bool HasPiiParent(XNode nodeToRedact)
+        {
+            if (nodeToRedact?.Parent != null && nodeToRedact.Parent is XElement element)
+            {
+                return RedactName && IsPiiName(element.Name.LocalName);
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -126,7 +127,7 @@ namespace Redacted
             }
             else if (TryGetPropertyAndValue(propertyObject, out XElement element, out XText text))
             {
-                RedactValue(text, RedactName && IsPiiName(element.Name.LocalName));
+                RedactValue(text, RedactName && IsPiiName(element?.Name?.LocalName));
             }
         }
 
@@ -183,7 +184,5 @@ namespace Redacted
                 text.Value = GetRedactedValue(text.Value, redactByName);
             }
         }
-
-
     }
 }

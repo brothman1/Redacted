@@ -9,15 +9,6 @@ namespace Redacted.Tests
     [TestClass]
     public class RedactorConfigurationTests
     {
-        private static string _defaultNameRedactValue;
-
-        [ClassInitialize]
-        public static void ClassInitializer(TestContext context)
-        {
-            var _redactorConfiguration = new PrivateType(typeof(RedactorConfiguration));
-            _defaultNameRedactValue = _redactorConfiguration.GetStaticFieldOrProperty("DefaultNameRedactValue") as string;
-        }
-
         [TestMethod]
         public void DataContract_WhenInputIsName_ShouldDeserializeWithCorrectMembersInitialized()
         {
@@ -27,7 +18,7 @@ namespace Redacted.Tests
 
             Assert.AreNotEqual(null, config);
             Assert.AreEqual(RedactBy.Name, config.RedactBy);
-            Assert.AreNotEqual(_defaultNameRedactValue, config.NameRedactValue);
+            Assert.AreNotEqual(RedactedResource.DefaultNameRedactValue, config.NameRedactValue);
             Assert.AreNotEqual(null, config.RedactNames);
             Assert.AreEqual(null, config.RedactPatterns);
             Assert.AreEqual(null, config.RedactPatterns);
@@ -45,7 +36,7 @@ namespace Redacted.Tests
 
             Assert.AreNotEqual(null, config);
             Assert.AreEqual(RedactBy.Pattern, config.RedactBy);
-            Assert.AreEqual(_defaultNameRedactValue, config.NameRedactValue);
+            Assert.AreEqual(RedactedResource.DefaultNameRedactValue, config.NameRedactValue);
             Assert.AreEqual(null, config.RedactNames);
             Assert.AreNotEqual(null, config.RedactPatterns);
             Assert.AreNotEqual(null, config.RedactPatterns[0].Name);
@@ -62,7 +53,7 @@ namespace Redacted.Tests
 
             Assert.AreNotEqual(null, config);
             Assert.AreEqual(RedactBy.NameAndPattern, config.RedactBy);
-            Assert.AreEqual(_defaultNameRedactValue, config.NameRedactValue);
+            Assert.AreEqual(RedactedResource.DefaultNameRedactValue, config.NameRedactValue);
             Assert.AreNotEqual(null, config.RedactNames);
             Assert.AreNotEqual(null, config.RedactPatterns);
             Assert.AreNotEqual(null, config.RedactPatterns[0].Name);

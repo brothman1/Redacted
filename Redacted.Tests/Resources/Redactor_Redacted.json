@@ -1,0 +1,58 @@
+{
+  "TestNames": {
+    "SSN": "*REDACTED-NAME*",
+    "PhoneNumbers": [
+      {
+        "Value": "*REDACTED-NAME*"
+      },
+      {
+        "Value": "*REDACTED-NAME*"
+      },
+      {
+        "Value": "*REDACTED-NAME*"
+      }
+    ],
+    "EmailAddresses": [
+      "*REDACTED-NAME*",
+      "*REDACTED-NAME*",
+      "*REDACTED-NAME*"
+    ],
+    "CustomerNames": [
+      {
+        "FirstName": "*REDACTED-NAME*",
+        "LastName": "*REDACTED-NAME*"
+      },
+      {
+        "FirstName": "*REDACTED-NAME*",
+        "LastName": "*REDACTED-NAME*"
+      },
+      {
+        "FirstName": "*REDACTED-NAME*",
+        "LastName": "*REDACTED-NAME*"
+      }
+    ]
+  },
+  "TestPatterns": {
+    "Values": [
+      "*REDACTED-CC-VISA-MSC-DSC*",
+      "*REDACTED-CC-VISA-MSC-DSC*",
+      "*REDACTED-CC-VISA-MSC-DSC*",
+      "*REDACTED-CC-AMEX*",
+      "*REDACTED-NINE-DIGITS-PLUS*",
+      "*REDACTED-NINE-DIGITS-PLUS*",
+      "*REDACTED-EMAIL-ADDRESS*",
+      "*REDACTED-DATE-SHORT-AMBIGUOUS*",
+      "*REDACTED-DATE-SHORT-AMBIGUOUS*",
+      "*REDACTED-DATE-SHORT-AMBIGUOUS*",
+      "*REDACTED-DATE-SHORT-AMBIGUOUS*",
+      "*REDACTED-DATE-SHORT-AMBIGUOUS*",
+      "*REDACTED-DATE-SHORT-AMBIGUOUS*",
+      "*REDACTED-DATE-SHORT-AMBIGUOUS*",
+      "*REDACTED-DATE-SHORT-AMBIGUOUS*",
+      "20*REDACTED-DATE-SHORT-AMBIGUOUS* *REDACTED-NINE-DIGITS-PLUS*"
+    ]
+  },
+  "TestMisc": {
+    "InnerXml": "<Root>\r\n  <Id>1</Id>\r\n  <FirstName>*REDACTED-NAME*</FirstName>\r\n  <MiddleName></MiddleName>\r\n  <LastName />\r\n  <SomeProperty>SomeValue</SomeProperty>\r\n</Root>"
+  }
+}

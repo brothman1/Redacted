@@ -7,6 +7,8 @@ namespace Redacted
     {
         int Id { get; }
 
+        RedactorType RedactorType { get; }
+
         IEnumerable<string> RedactNames { get; }
 
         IEnumerable<RedactPattern> RedactPatterns { get; }

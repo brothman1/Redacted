@@ -1,0 +1,50 @@
+﻿<!--My DOB is *REDACTED-DATE-SHORT-AMBIGUOUS*-->
+<!--*REDACTED-NINE-DIGITS-PLUS*-->
+<Tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<TestNames>
+		<SSN>*REDACTED-NAME*</SSN>
+		<ArrayOfSSN>
+			<Value>*REDACTED-NAME*</Value>
+			<Value>*REDACTED-NAME*</Value>
+			<Value>*REDACTED-NAME*</Value>
+		</ArrayOfSSN>
+	</TestNames>
+	<TestPatterns>
+		<!--CreditCardNumbers-->
+		<Visa>*REDACTED-CC-VISA-MSC-DSC*</Visa>
+		<MasterCard>*REDACTED-CC-VISA-MSC-DSC*</MasterCard>
+		<Discover>*REDACTED-CC-VISA-MSC-DSC*</Discover>
+		<Amex>*REDACTED-CC-AMEX*</Amex>
+		<!--SSN-->
+		<Value>*REDACTED-NINE-DIGITS-PLUS*</Value>
+		<!--PhoneNumber-->
+		<Value>*REDACTED-NINE-DIGITS-PLUS*</Value>
+		<!--Email-->
+		<Value>*REDACTED-EMAIL-ADDRESS*</Value>
+		<!--Dates-->
+		<Value>*REDACTED-DATE-SHORT-AMBIGUOUS*</Value>
+		<Value>*REDACTED-DATE-SHORT-AMBIGUOUS*</Value>
+		<Value>*REDACTED-DATE-SHORT-AMBIGUOUS*</Value>
+		<Value>*REDACTED-DATE-SHORT-AMBIGUOUS*</Value>
+		<Value>*REDACTED-DATE-SHORT-AMBIGUOUS*</Value>
+		<Value>*REDACTED-DATE-SHORT-AMBIGUOUS*</Value>
+		<Value>*REDACTED-DATE-SHORT-AMBIGUOUS*</Value>
+		<Value>*REDACTED-DATE-SHORT-AMBIGUOUS*</Value>
+		<Value>*REDACTED-DATE-SHORT-MONTH-DAY-YEAR*</Value>
+		<Value>20*REDACTED-DATE-SHORT-AMBIGUOUS* *REDACTED-NINE-DIGITS-PLUS*</Value>
+	</TestPatterns>
+	<TestMisc>
+		*REDACTED-EMAIL-ADDRESS*
+		<InnerJson outOfPlaceDOB="*REDACTED-NAME*">
+			<![CDATA[[
+  {
+    "Id": 1,
+    "FirstName": "*REDACTED-NAME*",
+    "MiddleName": "",
+    "LastName": null,
+    "SomeProperty": "SomeValue"
+  }
+]]]>
+		</InnerJson>
+	</TestMisc>
+</Tests>
