@@ -1,7 +1,55 @@
 {
-  "Id": 1,
-  "FirstName": "MyFirstName",
-  "MiddleName": "",
-  "LastName": null,
-  "SomeProperty": "SomeValue"
+  "TestNames": {
+    "SSN": "123456789",
+    "PhoneNumbers": [
+      {
+        "Value": "123-456-7890"
+      },
+      {
+        "Value": "123-456-7891"
+      },
+      {
+        "Value": "123-456-7892"
+      }
+    ],
+    "EmailAddresses": [
+      "123@gmail.com",
+      "124@gmail.com",
+      "126@gmail.com"
+    ],
+    "CustomerNames": [
+      {
+        "FirstName": "Customer1",
+        "LastName": "Customer1"
+      },
+      {
+        "FirstName": "Customer2",
+        "LastName": "Customer2"
+      },
+      {
+        "FirstName": "Customer3",
+        "LastName": "Customer3"
+      }
+    ]
+  },
+  "TestPatterns": {
+    "Values": [
+      "4444-4444-4444-4444",
+      "5333 3333 3333 3333",
+      "6666666666666666",
+      "3333 333333 33333",
+      "123-45-6789",
+      "123-456-7890",
+      "123@gmail.com",
+      "1/1/10",
+      "1/10/10",
+      "10/1/10",
+      "10/10/10",
+      "1/1/1000",
+      "1/10/1000",
+      "10/1/1000",
+      "10/10/1000",
+      "2020-01-01 23:59:59.997"
+    ]
+  }
 }

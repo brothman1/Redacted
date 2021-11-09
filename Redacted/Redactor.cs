@@ -16,7 +16,7 @@ namespace Redacted
         private const string JsonObjectEnd = "}";
         private const string JsonArrayStart = "[";
         private const string JsonArrayEnd = "]";
-        private RedactorConfiguration _config;
+        private IRedactorConfiguration _config;
         private IRedactor _xmlRedactor = null;
         private IRedactor _jsonRedactor = null;
 
@@ -90,9 +90,9 @@ namespace Redacted
         /// <summary>
         /// Initializes a new instance of the <see cref="Redactor"/> class that will redact by matching property names or value patterns.
         /// </summary>
-        /// <param name="config"><see cref="RedactorConfiguration"/> that houses the configurating used to redact.</param>
+        /// <param name="config"><see cref="IRedactorConfiguration"/> that houses the configurating used to redact.</param>
         /// <exception cref="ArgumentNullException"><paramref name="config"/> cannot be null.</exception>
-        public Redactor(RedactorConfiguration config)
+        public Redactor(IRedactorConfiguration config)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config), $"\"{nameof(config)}\" cannot be null.");
         }
@@ -106,7 +106,7 @@ namespace Redacted
         /// <exception cref="ArgumentException"><paramref name="valueToRedact"/> must be in valid XML or JSON format.</exception>
         public virtual string Redact(string valueToRedact)
         {
-            valueToRedact = valueToRedact.Trim();
+            valueToRedact = valueToRedact?.Trim();
             if (HasXmlEdges(valueToRedact))
             {
                 return XmlRedactor.Redact(valueToRedact);

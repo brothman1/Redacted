@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\IRedactorConfiguration.cs" />
     <Compile Include="Redactor.cs" />
     <Compile Include="IRedactor.cs" />
     <Compile Include="JsonRedactor\JsonRedactor.cs" />

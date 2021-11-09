@@ -11,19 +11,19 @@ namespace Redacted
         /// <summary>
         /// Initializes a new instance of the <see cref="XmlRedactor"/> class that will redact by matching property names or value patterns.
         /// </summary>
-        /// <param name="config"><see cref="RedactorConfiguration"/> that houses the configurating used to redact.</param>
+        /// <param name="config"><see cref="IRedactorConfiguration"/> that houses the configurating used to redact.</param>
         /// <exception cref="ArgumentNullException"><paramref name="config"/> cannot be null.</exception>
-        public XmlRedactor(RedactorConfiguration config) : base(config)
+        public XmlRedactor(IRedactorConfiguration config) : base(config)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XmlRedactor"/> class that will redact by matching property names or value patterns.
         /// </summary>
-        /// <param name="config"><see cref="RedactorConfiguration"/> that houses the configurating used to redact.</param>
+        /// <param name="config"><see cref="IRedactorConfiguration"/> that houses the configurating used to redact.</param>
         /// <param name="parentRedactor"><see cref="Redactor"/> that created this.</param>
         /// <exception cref="ArgumentNullException"><paramref name="config"/> cannot be null.</exception>
-        public XmlRedactor(RedactorConfiguration config, IRedactor parentRedactor) : base(config)
+        public XmlRedactor(IRedactorConfiguration config, IRedactor parentRedactor) : base(config)
         {
             ParentRedactor = parentRedactor;
         }

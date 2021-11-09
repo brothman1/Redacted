@@ -6,10 +6,10 @@ using System.Runtime.Serialization;
 namespace Redacted.Configuration
 {
     [DataContract]
-    public class RedactorConfiguration
+    public class RedactorConfiguration : IRedactorConfiguration
     {
         [IgnoreDataMember]
-        public const string DefaultNameRedactValue = @"*REDACTED-NAME*";
+        private const string DefaultNameRedactValue = @"*REDACTED-NAME*";
 
         [DataMember]
         /// <summary>
