@@ -494,31 +494,79 @@ namespace Redacted.Tests
         [TestMethod]
         public void TryGetPropertyAndValue_WhenPropertyObjectIsXElementAndHasNoElementsAndFirstNodeIsXText_ShouldOutPropertyObjectAsXElementAndFirstNodeAsXTextAndReturnTrue()
         {
+            var xmlRedactor = new XmlRedactor(RedactedResource.GetMockedRedactorConfiguration(RedactBy.NameAndPattern));
+            var privateXmlRedactor = new PrivateObject(xmlRedactor);
+            var parentNode = new XElement(XName.Get("SomeName"));
+            parentNode.SetElementValue(XName.Get("Element1"), "SomeValue1");
+            var propertyObject = parentNode.FirstNode as XElement;
+            var parameters = new object[] { propertyObject, new XElement(XName.Get("name")), new XText("val") };
 
+            var returnValue = (bool)privateXmlRedactor.Invoke("TryGetPropertyAndValue", parameters);
+
+            Assert.IsTrue(returnValue);
+            Assert.AreEqual(propertyObject, parameters[1]);
+            Assert.AreEqual(propertyObject.FirstNode, parameters[2]);
         }
 
         [TestMethod]
         public void TryGetPropertyAndValue_WhenPropertyObjectIsXElementAndHasNoElemntsAndFirstNodeIsNotXText_ShouldOutNullPropertyAndValueAndReturnFalse()
         {
+            var xmlRedactor = new XmlRedactor(RedactedResource.GetMockedRedactorConfiguration(RedactBy.NameAndPattern));
+            var privateXmlRedactor = new PrivateObject(xmlRedactor);
+            var propertyObject = new XElement(XName.Get("SomeName"));
+            var parameters = new object[] { propertyObject, new XElement(XName.Get("name")), new XText("val") };
 
+            var returnValue = (bool)privateXmlRedactor.Invoke("TryGetPropertyAndValue", parameters);
+
+            Assert.IsFalse(returnValue);
+            Assert.AreEqual(null, parameters[1]);
+            Assert.AreEqual(null, parameters[2]);
         }
 
         [TestMethod]
         public void TryGetPropertyAndValue_WhenPropertyObjectIsXElementAndHasElements_ShouldOutNullPropertyAndValueAndReturnFalse()
         {
+            var xmlRedactor = new XmlRedactor(RedactedResource.GetMockedRedactorConfiguration(RedactBy.NameAndPattern));
+            var privateXmlRedactor = new PrivateObject(xmlRedactor);
+            var propertyObject = new XElement(XName.Get("SomeName"));
+            propertyObject.SetElementValue(XName.Get("Element1"), "SomeValue1");
+            var parameters = new object[] { propertyObject, new XElement(XName.Get("name")), new XText("val") };
 
+            var returnValue = (bool)privateXmlRedactor.Invoke("TryGetPropertyAndValue", parameters);
+
+            Assert.IsFalse(returnValue);
+            Assert.AreEqual(null, parameters[1]);
+            Assert.AreEqual(null, parameters[2]);
         }
 
         [TestMethod]
         public void TryGetPropertyAndValue_WhenPropertyObjectIsNotXElement_ShouldOutNullPropertyAndValueAndReturnFalse()
         {
+            var xmlRedactor = new XmlRedactor(RedactedResource.GetMockedRedactorConfiguration(RedactBy.NameAndPattern));
+            var privateXmlRedactor = new PrivateObject(xmlRedactor);
+            var propertyObject = new XText("val");
+            var parameters = new object[] { propertyObject, new XElement(XName.Get("name")), new XText("val") };
 
+            var returnValue = (bool)privateXmlRedactor.Invoke("TryGetPropertyAndValue", parameters);
+
+            Assert.IsFalse(returnValue);
+            Assert.AreEqual(null, parameters[1]);
+            Assert.AreEqual(null, parameters[2]);
         }
 
         [TestMethod]
         public void TryGetPropertyAndValue_WhenPropertyObjectIsNull_ShouldOutNullPropertyAndValueAndReturnFalse()
         {
+            var xmlRedactor = new XmlRedactor(RedactedResource.GetMockedRedactorConfiguration(RedactBy.NameAndPattern));
+            var privateXmlRedactor = new PrivateObject(xmlRedactor);
+            var propertyObject = null as XElement;
+            var parameters = new object[] { propertyObject, new XElement(XName.Get("name")), new XText("val") };
 
+            var returnValue = (bool)privateXmlRedactor.Invoke("TryGetPropertyAndValue", parameters);
+
+            Assert.IsFalse(returnValue);
+            Assert.AreEqual(null, parameters[1]);
+            Assert.AreEqual(null, parameters[2]);
         }
         #endregion
 
@@ -526,25 +574,114 @@ namespace Redacted.Tests
         [TestMethod]
         public void RedactValue_WhenValueObjectIsXComment_ShouldAssignXCommentValueAndCallGetRedactedValue()
         {
+            using (ShimsContext.Create())
+            {
+                var xmlRedactor = new XmlRedactor(RedactedResource.GetMockedRedactorConfiguration(RedactBy.NameAndPattern));
+                var privateXmlRedactor = new PrivateObject(xmlRedactor);
+                var valueObject = new XComment("Sensitive Comment");
+                var redactedValue = "RedactedValue";
+                var getRedactedValueCalled = false;
+                ShimRedactor.AllInstances.GetRedactedValueStringBoolean = (x, y, z) =>
+                {
+                    getRedactedValueCalled = true;
+                    return redactedValue;
+                };
 
+                privateXmlRedactor.Invoke("RedactValue", valueObject, false);
+
+                Assert.AreEqual(valueObject.Value, redactedValue);
+                Assert.IsTrue(getRedactedValueCalled);
+            }
         }
 
         [TestMethod]
         public void RedactValue_WhenValueObjectIsXAttribute_ShouldAssignAttributeValueAndCallGetRedactedValue()
         {
+            using (ShimsContext.Create())
+            {
+                var xmlRedactor = new XmlRedactor(RedactedResource.GetMockedRedactorConfiguration(RedactBy.NameAndPattern));
+                var privateXmlRedactor = new PrivateObject(xmlRedactor);
+                var valueObject = new XAttribute(XName.Get("AttributeName"), "SomeValue");
+                var redactedValue = "RedactedValue";
+                var getRedactedValueCalled = false;
+                ShimRedactor.AllInstances.GetRedactedValueStringBoolean = (x, y, z) =>
+                {
+                    getRedactedValueCalled = true;
+                    return redactedValue;
+                };
 
+                privateXmlRedactor.Invoke("RedactValue", valueObject, false);
+
+                Assert.AreEqual(valueObject.Value, redactedValue);
+                Assert.IsTrue(getRedactedValueCalled);
+            }
         }
 
         [TestMethod]
         public void RedactedValue_WhenValueObjectIsXText_ShouldAssignXTextValueAndCallGetRedactedValue()
         {
+            using (ShimsContext.Create())
+            {
+                var xmlRedactor = new XmlRedactor(RedactedResource.GetMockedRedactorConfiguration(RedactBy.NameAndPattern));
+                var privateXmlRedactor = new PrivateObject(xmlRedactor);
+                var valueObject = new XText("Sensitive Text");
+                var redactedValue = "RedactedValue";
+                var getRedactedValueCalled = false;
+                ShimRedactor.AllInstances.GetRedactedValueStringBoolean = (x, y, z) =>
+                {
+                    getRedactedValueCalled = true;
+                    return redactedValue;
+                };
 
+                privateXmlRedactor.Invoke("RedactValue", valueObject, false);
+
+                Assert.AreEqual(valueObject.Value, redactedValue);
+                Assert.IsTrue(getRedactedValueCalled);
+            }
         }
 
         [TestMethod]
         public void RedactedValue_WhenValueObjectIsNotXCommentOrXAttributeOrXText_ShouldNotCallGetRedactedValue()
         {
+            using (ShimsContext.Create())
+            {
+                var xmlRedactor = new XmlRedactor(RedactedResource.GetMockedRedactorConfiguration(RedactBy.NameAndPattern));
+                var privateXmlRedactor = new PrivateObject(xmlRedactor);
+                var valueObject = new XElement(XName.Get("SomeName"), "SomeValue");
+                var redactedValue = "RedactedValue";
+                var getRedactedValueCalled = false;
+                ShimRedactor.AllInstances.GetRedactedValueStringBoolean = (x, y, z) =>
+                {
+                    getRedactedValueCalled = true;
+                    return redactedValue;
+                };
 
+                privateXmlRedactor.Invoke("RedactValue", valueObject, false);
+
+                Assert.IsFalse(getRedactedValueCalled);
+            }
+        }
+
+        [TestMethod]
+        public void RedactedValue_WhenValueObjectIsNull_ShouldNotCallGetRedactedValue()
+        {
+            using (ShimsContext.Create())
+            {
+                var xmlRedactor = new XmlRedactor(RedactedResource.GetMockedRedactorConfiguration(RedactBy.NameAndPattern));
+                var privateXmlRedactor = new PrivateObject(xmlRedactor);
+                var valueObject = null as XObject;
+                var redactedValue = "RedactedValue";
+                var getRedactedValueCalled = false;
+                ShimRedactor.AllInstances.GetRedactedValueStringBoolean = (x, y, z) =>
+                {
+                    getRedactedValueCalled = true;
+                    return redactedValue;
+                };
+
+                privateXmlRedactor.Invoke("RedactValue", valueObject, false);
+
+                Assert.IsFalse(getRedactedValueCalled);
+            }
         }
         #endregion
         #endregion
