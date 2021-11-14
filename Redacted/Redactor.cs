@@ -381,7 +381,7 @@ namespace Redacted
                 {
                     if (value.Length >= pattern.MinimumLength)
                     {
-                        value = Regex.Replace(value, pattern.Pattern, $"*REDACTED-{pattern.Name}*");
+                        value = Regex.Replace(value, pattern.Pattern, $"*REDACTED-{pattern.Name}*", RegexOptions.Compiled);
                     }
                 }
             }
